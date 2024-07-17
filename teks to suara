@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teks ke Suara</title>
+</head>
+<body>
+  <h1>Ubah Teks Menjadi Suara</h1>
+  <textarea id="text-input" rows="5" placeholder="Masukkan teks di sini"></textarea>
+  <button onclick="generateSpeech()">Dengarkan</button>
+  <button onclick="downloadSpeech()">Unduh Suara</button>
+  <audio id="speech-output" controls></audio>
+
+  <script>
+    function generateSpeech() {
+      var text = document.getElementById("text-input").value;
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'id-ID'; // Ganti dengan kode bahasa yang sesuai
+      speechSynthesis.speak(utterance);
+      document.getElementById("speech-output").src = window.URL.createObjectURL(utterance);
+    }
+
+    function downloadSpeech() {
+      var text = document.getElementById("text-input").value;
+      var audioContext = new AudioContext();
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'id-ID'; // Ganti dengan kode bahasa yang sesuai
+
+      speechSynthesis.speak(utterance);
+      audioContext.resume().then(() => {
+        utterance.onend = () => {
+          audioContext.close().then(() => {
+            var audioBlob = new Blob([audioContext.state], { type: 'audio/mpeg' });
+            var audioUrl = URL.createObjectURL(audioBlob);
+            var link = document.createElement('a');
+            link.href = audioUrl;
+            link.download = 'teks_ke_suara.mp3';
+            link.click();
+          });
+        };
+      });
+    }
+  </script>
+</body>
+</html>
